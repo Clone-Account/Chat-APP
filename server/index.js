@@ -52,12 +52,7 @@ peerServer.on('connection',    (c) => console.log(`📹 Peer connected: ${c.getI
 peerServer.on('disconnect',    (c) => console.log(`📹 Peer left:      ${c.getId()}`));
 
 // ─── Serve React build in production ─────────────────────────────────────────
-if (isProd) {
-  const distPath = path.join(__dirname, '../client/dist');
-  app.use(express.static(distPath));
-  // SPA fallback — any non-API route returns index.html (Express 5 syntax)
-  app.get('/(.*)', (_req, res) => res.sendFile(path.join(distPath, 'index.html')));
-}
+// (Removed SPA fallback because the frontend is hosted separately on Vercel)
 
 // ─── MongoDB + Start ──────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
