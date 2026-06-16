@@ -55,8 +55,8 @@ peerServer.on('disconnect',    (c) => console.log(`📹 Peer left:      ${c.getI
 if (isProd) {
   const distPath = path.join(__dirname, '../client/dist');
   app.use(express.static(distPath));
-  // SPA fallback — any non-API route returns index.html
-  app.get('*', (_req, res) => res.sendFile(path.join(distPath, 'index.html')));
+  // SPA fallback — any non-API route returns index.html (Express 5 syntax)
+  app.get('/(.*)', (_req, res) => res.sendFile(path.join(distPath, 'index.html')));
 }
 
 // ─── MongoDB + Start ──────────────────────────────────────────────────────────
