@@ -18,18 +18,26 @@ const server = http.createServer(app);
 const isProd = process.env.NODE_ENV === 'production';
 
 // ─── Socket.io ────────────────────────────────────────────────────────────────
+// CLIENT_URL must be set in Render env vars to your Vercel frontend URL
+const allowedOrigins = isProd
+  ? (process.env.CLIENT_URL ? [process.env.CLIENT_URL] : true)
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
 const io = new Server(server, {
   cors: {
-    origin: isProd ? '*' : ['http://localhost:5173', 'http://localhost:3000'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
-    credentials: !isProd,
+    credentials: true,
   },
+  // Polling first — more reliable on Render free tier, then upgrade to WS
+  transports: ['polling', 'websocket'],
+  allowUpgrades: true,
 });
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: isProd ? '*' : ['http://localhost:5173', 'http://localhost:3000'],
-  credentials: !isProd,
+  origin: allowedOrigins,
+  credentials: true,
 }));
 app.use(express.json());
 

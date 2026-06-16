@@ -6,7 +6,9 @@ const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
 
 const socket = io(BACKEND, {
   autoConnect: false,
-  transports: ['websocket', 'polling'],
+  // Polling first — Render free tier is more stable with polling before WS upgrade
+  transports: ['polling', 'websocket'],
+  withCredentials: true,
 });
 
 export default socket;
