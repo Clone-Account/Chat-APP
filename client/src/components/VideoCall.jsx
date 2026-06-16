@@ -21,11 +21,26 @@ export default function VideoCall({
   const localVideoEl  = useRef(null);
   const timerRef      = useRef(null);
 
-  const isSecure = window.location.protocol === 'https:';
-  const peerHost  = window.location.hostname;
-  // In dev (Vite on 5173), Vite proxies /peerjs → Express on 5000.
-  // In production, PeerJS is on the same port as the site (80/443).
-  const peerPort  = parseInt(window.location.port) || (isSecure ? 443 : 80);
+  // In dev: use Vite proxy (window.location = localhost:5173 → proxied to 5000).
+  // In production: parse the Render backend URL from the env variable.
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  let peerHost, peerPort, isSecure;
+  if (backendUrl) {
+    try {
+      const parsed = new URL(backendUrl);
+      peerHost = parsed.hostname;
+      isSecure = parsed.protocol === 'https:';
+      peerPort = parseInt(parsed.port) || (isSecure ? 443 : 80);
+    } catch {
+      peerHost  = window.location.hostname;
+      isSecure  = window.location.protocol === 'https:';
+      peerPort  = parseInt(window.location.port) || (isSecure ? 443 : 80);
+    }
+  } else {
+    peerHost  = window.location.hostname;
+    isSecure  = window.location.protocol === 'https:';
+    peerPort  = parseInt(window.location.port) || (isSecure ? 443 : 80);
+  }
 
   // Format seconds → MM:SS
   const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;

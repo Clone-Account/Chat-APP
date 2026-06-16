@@ -1,6 +1,10 @@
 import { io } from 'socket.io-client';
 
-const socket = io(import.meta.env.VITE_BACKEND_URL || '/', {
+// In development: connect to '/' (proxied by Vite to localhost:5000)
+// In production:  connect to the Render backend via VITE_BACKEND_URL
+const BACKEND = import.meta.env.VITE_BACKEND_URL || '';
+
+const socket = io(BACKEND, {
   autoConnect: false,
   transports: ['websocket', 'polling'],
 });
